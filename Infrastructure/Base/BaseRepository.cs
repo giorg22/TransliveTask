@@ -1,0 +1,48 @@
+﻿using Domain.Base;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Infrastructure.Base
+{
+    public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
+    {
+        private readonly ApplicationDBContext _context;
+        public BaseRepository(ApplicationDBContext context)
+        {
+            _context = context;
+        }
+
+        public virtual async Task<string> Add(T entity)
+        {
+            await _context.AddAsync(entity);
+            await _context.SaveChangesAsync();
+            return entity.Id;
+        }
+
+        public virtual async Task Delete(T entity)
+        {
+            _context.Set<T>().Remove(entity);
+            await _context.SaveChangesAsync();
+        }
+
+        public virtual async Task<IEnumerable<T>> GetAll()
+        {
+            return await _context.Set<T>().ToListAsync();
+        }
+
+        public virtual async Task<T> GetById(string id)
+        {
+            return await _context.Set<T>().FindAsync(id);
+        }
+
+        public virtual async Task Update(T entity)
+        {
+            _context.Entry(entity).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+        }
+    }
+}
