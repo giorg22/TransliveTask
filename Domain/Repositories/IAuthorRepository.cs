@@ -11,5 +11,6 @@ namespace Domain.Repositories
     public interface IAuthorRepository : IBaseRepository<Author>
     {
         Task<IEnumerable<Author>> GetAuthorsWithBooks();
+        Task<Author> GetAuthorByIdWithBooks(string id);
     }
 }

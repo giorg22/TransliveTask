@@ -15,8 +15,9 @@ namespace Application.Books
     public interface IBookService
     {
         Task<Response<string>> CreateBook(AddBookRequest request);
+        Task<Response<UpdateBookResponse>> UpdateBook(UpdateBookRequest request);
         Task<Response<DeleteBookResponse>> DeleteBook(string id);
-        Task<Response<IEnumerable<GetBookModel>>> GetAllBooks();
-        Task<Response<Book>> GetBookById(string id);
+        Task<Response<IEnumerable<BookModel>>> GetAllBooks();
+        Task<Response<BookModel>> GetBookById(string id);
     }
 }

@@ -13,5 +13,7 @@ namespace Domain.Base
         Task<string> Add(T entity);
         Task Update(T entity);
         Task Delete(T entity);
+        Task AddRange(IEnumerable<T> entities);
+        Task RemoveRange(IEnumerable<T> entities);
     }
 }

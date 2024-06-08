@@ -18,6 +18,11 @@ namespace Infrastructure.Repositories
             _context = context;
         }
 
+        public async Task<Author> GetAuthorByIdWithBooks(string id)
+        {
+            return await _context.Authors.Include(x => x.AuthorBooks).ThenInclude(x => x.Book).FirstOrDefaultAsync(x => x.Id == id);
+        }
+
         public async Task<IEnumerable<Author>> GetAuthorsWithBooks()
         {
             return await _context.Authors.Include(x => x.AuthorBooks).ThenInclude(x => x.Book).ToListAsync();

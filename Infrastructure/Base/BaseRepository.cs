@@ -23,6 +23,12 @@ namespace Infrastructure.Base
             return entity.Id;
         }
 
+        public async Task AddRange(IEnumerable<T> entities)
+        {
+            await _context.Set<T>().AddRangeAsync(entities);
+            await _context.SaveChangesAsync();
+        }
+
         public virtual async Task Delete(T entity)
         {
             _context.Set<T>().Remove(entity);
@@ -37,6 +43,12 @@ namespace Infrastructure.Base
         public virtual async Task<T> GetById(string id)
         {
             return await _context.Set<T>().FindAsync(id);
+        }
+
+        public async Task RemoveRange(IEnumerable<T> entities)
+        {
+            _context.Set<T>().RemoveRange(entities);
+            await _context.SaveChangesAsync();
         }
 
         public virtual async Task Update(T entity)

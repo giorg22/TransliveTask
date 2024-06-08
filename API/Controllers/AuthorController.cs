@@ -1,5 +1,6 @@
 ﻿using Application.Authors;
 using Application.Authors.Requests;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -22,7 +23,7 @@ namespace API.Controllers
             return Ok(result);
         }
 
-        [HttpGet("Author/{id}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetAuthorById(string id)
         {
             var result = await _authorService.GetAuthorById(id);
@@ -36,7 +37,14 @@ namespace API.Controllers
             return Ok(result);
         }
 
-        [HttpDelete("DeleteAuthor")]
+        [HttpPut("UpdateAuthor")]
+        public async Task<IActionResult> UpdateAuthor(UpdateAuthorRequest request)
+        {
+            var result = await _authorService.UpdateAuthor(request);
+            return Ok(result);
+        }
+
+        [HttpDelete("DeleteAuthor/{id}")]
         public async Task<IActionResult> DeleteAuthor(string id)
         {
             var result = await _authorService.DeleteAuthor(id);

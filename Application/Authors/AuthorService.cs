@@ -30,6 +30,13 @@ namespace Application.Authors
             return Ok(result);
         }
 
+        public async Task<Response<UpdateAuthorResponse>> UpdateAuthor(UpdateAuthorRequest request)
+        {
+            var author = request.Adapt<Author>();
+            await _authorRepository.Update(author);
+            return Ok<UpdateAuthorResponse>();
+        }
+
         public async Task<Response<DeleteAuthorResponse>> DeleteAuthor(string id)
         {
             var author = await _authorRepository.GetById(id);
@@ -42,22 +49,23 @@ namespace Application.Authors
             return Ok<DeleteAuthorResponse>();
         }
 
-        public async Task<Response<IEnumerable<GetAuthorModel>>> GetAllAuthors()
+        public async Task<Response<IEnumerable<AuthorModel>>> GetAllAuthors()
         {
             var authors = await _authorRepository.GetAuthorsWithBooks();
-            var result = authors.Adapt<IEnumerable<GetAuthorModel>>();
+            var result = authors.Adapt<IEnumerable<AuthorModel>>();
             return Ok(result);
         }
 
-        public async Task<Response<Author>> GetAuthorById(string id)
+        public async Task<Response<AuthorModel>> GetAuthorById(string id)
         {
-            var author = await _authorRepository.GetById(id);
+            var author = await _authorRepository.GetAuthorByIdWithBooks(id);
             if (author == null)
             {
-                return Fail<Author>(ErrorCode.NotFound, "No Author was found with the provided Id");
+                return Fail<AuthorModel>(ErrorCode.NotFound, "No Author was found with the provided Id");
             }
-            
-            return Ok(author);
+
+            var result = author.Adapt<AuthorModel>();
+            return Ok(result);
         }
     }
 }

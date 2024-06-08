@@ -15,6 +15,6 @@ namespace Domain.Entities
         public int Rating { get; set; }
         public int PublishYear { get; set; }
         public bool IsTaken { get; set; }
-        public ICollection<AuthorBooks> AuthorBooks { get; set; }
+        public IEnumerable<AuthorBooks> AuthorBooks { get; set; }
     }
 }

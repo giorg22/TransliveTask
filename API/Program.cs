@@ -1,4 +1,5 @@
 using API;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,12 @@ builder.Services.AddCors(options => options.AddPolicy("CorsPolicy",
         }));
 
 var app = builder.Build();
+
+app.UseStaticFiles(new StaticFileOptions()
+{
+    FileProvider = new PhysicalFileProvider(app.Configuration["ImagesPath"]),
+    RequestPath = new PathString("/images")
+});
 
 if (app.Environment.IsDevelopment())
 {

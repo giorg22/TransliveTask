@@ -12,6 +12,6 @@ namespace Domain.Entities
         public string Firstname { get; set; }
         public string Lastname { get; set; }
         public int BirthYear { get; set; }
-        public ICollection<AuthorBooks> AuthorBooks { get; set; }
+        public IEnumerable<AuthorBooks> AuthorBooks { get; set; }
     }
 }

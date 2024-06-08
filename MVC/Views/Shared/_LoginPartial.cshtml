@@ -1,0 +1,29 @@
+﻿@using Microsoft.AspNetCore.Identity;
+@using System.IdentityModel.Tokens.Jwt;
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor _accessor
+
+
+<ul class="navbar-nav">
+    @{
+        var handler = new JwtSecurityTokenHandler();
+        var username = _accessor.HttpContext.Request.Cookies["username"];
+        if (username != null)
+        {
+            <li class="nav-item">
+                <h2>Hi @username!</h2>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark" id="logout" asp-action="logout" asp-controller="auth">Logout</a>
+            </li>
+        }
+        else
+        {
+            <li class="nav-item">
+                <a class="nav-link text-dark" id="login" asp-action="Login" asp-controller="auth">Login</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark" id="register" asp-action="Register" asp-controller="auth">Register</a>
+            </li>
+        }
+    }
+</ul>

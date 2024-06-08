@@ -8,6 +8,8 @@ namespace Application.Shared
 {
     public enum ErrorCode
     {
-        NotFound = 0
+        NotFound = 0,
+        AlreadyExists = 1,
+        InvalidUsernameOrPassword = 2
     }
 }

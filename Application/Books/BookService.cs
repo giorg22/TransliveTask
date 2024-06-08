@@ -8,6 +8,7 @@ using Application.Shared;
 using Domain.Entities;
 using Domain.Repositories;
 using Mapster;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
@@ -23,13 +24,19 @@ namespace Application.Books
     {
         private readonly IBookRepository _bookRepository;
         private readonly IAuthorRepository _authorRepository;
+        private readonly IAuthorBookRepository _authorBookRepository;
+        private readonly IConfiguration _configuration;
 
         public BookService(
             IBookRepository bookRepository, 
-            IAuthorRepository authorRepository)
+            IAuthorRepository authorRepository,
+            IAuthorBookRepository authorBookRepository,
+            IConfiguration configuration)
         {
             _bookRepository = bookRepository;
             _authorRepository = authorRepository;
+            _authorBookRepository = authorBookRepository;
+            _configuration = configuration;
         }
         public async Task<Response<string>> CreateBook(AddBookRequest request)
         {
@@ -53,7 +60,8 @@ namespace Application.Books
             {
                 throw new FileLoadException("File not selected");
             }
-            var path = Path.Combine(Environment.CurrentDirectory, request.Image.FileName);
+
+            var path = Path.Combine(_configuration["ImagesPath"], request.Image.FileName);
 
             using (FileStream stream = new FileStream(path, FileMode.Create))
             {
@@ -61,10 +69,48 @@ namespace Application.Books
                 stream.Close();
             }
 
-            book.ImagePath = path;
+            book.ImagePath = request.Image.FileName;
 
             var result = await _bookRepository.Add(book);
             return Ok(result);
+        }
+
+        public async Task<Response<UpdateBookResponse>> UpdateBook(UpdateBookRequest request)
+        {
+            var book = request.Adapt<Book>();
+
+            var authors = new List<AuthorBooks>();
+
+            foreach (var id in request.AuthorIds)
+            {
+                var author = await _authorRepository.GetById(id);
+                if (author == null)
+                {
+                    return Fail<UpdateBookResponse>(ErrorCode.NotFound, "No Author was found with the provided Id");
+                }
+                authors.Add(new AuthorBooks() { AuthorId = id, BookId = request.Id });
+            }
+
+            var previousAuthors = await _bookRepository.GetBookAuthors(request.Id);
+            await _authorBookRepository.RemoveRange(previousAuthors);
+            await _authorBookRepository.AddRange(authors);
+
+            if (request.Image.FileName == null || request.Image.FileName.Length == 0)
+            {
+                throw new FileLoadException("File not selected");
+            }
+
+            var path = Path.Combine(_configuration["ImagesPath"], request.Image.FileName);
+
+            using (FileStream stream = new FileStream(path, FileMode.Create))
+            {
+                await request.Image.CopyToAsync(stream);
+                stream.Close();
+            }
+
+            book.ImagePath = request.Image.FileName;
+            await _bookRepository.Update(book);
+            return Ok<UpdateBookResponse>();
         }
 
         public async Task<Response<DeleteBookResponse>> DeleteBook(string id)
@@ -79,22 +125,23 @@ namespace Application.Books
             return Ok<DeleteBookResponse>();
         }
 
-        public async Task<Response<IEnumerable<GetBookModel>>> GetAllBooks()
+        public async Task<Response<IEnumerable<BookModel>>> GetAllBooks()
         {
             var books = await _bookRepository.GetBooksWithAuthors();
-            var result = books.Adapt<IEnumerable<GetBookModel>>();
+            var result = books.Adapt<IEnumerable<BookModel>>();
             return Ok(result);
         }
 
-        public async Task<Response<Book>> GetBookById(string id)
+        public async Task<Response<BookModel>> GetBookById(string id)
         {
-            var book = await _bookRepository.GetById(id);
+            var book = await _bookRepository.GetBookByIdWithAuthors(id);
             if (book == null)
             {
-                return Fail<Book>(ErrorCode.NotFound, "No Book was found with the provided Id");
+                return Fail<BookModel>(ErrorCode.NotFound, "No Book was found with the provided Id");
             }
 
-            return Ok(book);
+            var result = book.Adapt<BookModel>();
+            return Ok(result);
         }
     }
 }

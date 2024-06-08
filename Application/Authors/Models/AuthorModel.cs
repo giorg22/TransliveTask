@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace Application.Authors.Models
 {
-    public class GetAuthorModel
+    public class AuthorModel
     {
         public string Id { get; set; }
         public string Firstname { get; set; }
         public string Lastname { get; set; }
         public int BirthYear { get; set; }
-        public IEnumerable<GetBookModel> Books { get; set; }
+        public IEnumerable<BookModel> Books { get; set; }
     }
 }

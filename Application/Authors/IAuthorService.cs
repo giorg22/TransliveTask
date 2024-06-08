@@ -14,8 +14,9 @@ namespace Application.Authors
     public interface IAuthorService
     {
         Task<Response<string>> CreateAuthor(AddAuthorRequest request);
+        Task<Response<UpdateAuthorResponse>> UpdateAuthor(UpdateAuthorRequest request);
         Task<Response<DeleteAuthorResponse>> DeleteAuthor(string id);
-        Task<Response<IEnumerable<GetAuthorModel>>> GetAllAuthors();
-        Task<Response<Author>> GetAuthorById(string id);
+        Task<Response<IEnumerable<AuthorModel>>> GetAllAuthors();
+        Task<Response<AuthorModel>> GetAuthorById(string id);
     }
 }

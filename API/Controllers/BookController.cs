@@ -1,6 +1,7 @@
 ﻿using Application.Authors.Requests;
 using Application.Books;
 using Application.Books.Requests;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -23,7 +24,7 @@ namespace API.Controllers
             return Ok(result);
         }
 
-        [HttpGet("Book/{id}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetBookById(string id)
         {
             var result = await _bookService.GetBookById(id);
@@ -31,13 +32,20 @@ namespace API.Controllers
         }
 
         [HttpPost("AddBook")]
-        public async Task<IActionResult> AddBook(AddBookRequest request)
+        public async Task<IActionResult> AddBook([FromForm] AddBookRequest request)
         {
             var result = await _bookService.CreateBook(request);
             return Ok(result);
         }
 
-        [HttpDelete("DeleteBook")]
+        [HttpPut("UpdateBook")]
+        public async Task<IActionResult> UpdateBook([FromForm] UpdateBookRequest request)
+        {
+            var result = await _bookService.UpdateBook(request);
+            return Ok(result);
+        }
+
+        [HttpDelete("DeleteBook/{id}")]
         public async Task<IActionResult> DeleteBook(string id)
         {
             var result = await _bookService.DeleteBook(id);

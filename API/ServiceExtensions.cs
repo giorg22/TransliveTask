@@ -5,13 +5,16 @@ using Domain.Base;
 using Domain.Repositories;
 using Infrastructure;
 using Infrastructure.Base;
-using Infrastructure.Mapping;
+using Infrastructure.Configs;
+using Application.Mapping;
 using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using Domain.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace API
 {
@@ -80,17 +83,34 @@ namespace API
             });
             #endregion
 
+            #region Identity
+            services.AddIdentity<User, Role>(
+                 x =>
+                {
+                    x.User.RequireUniqueEmail = false;
+                    x.Password.RequireNonAlphanumeric = false;
+                    x.Password.RequireLowercase = false;
+                    x.Password.RequireUppercase = false;
+                    x.Password.RequireDigit = false;
+                })
+                .AddEntityFrameworkStores<ApplicationDBContext>()
+                .AddDefaultTokenProviders();
+            #endregion
+
             services.AddDbContext<ApplicationDBContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
             services.AddScoped<IAuthorRepository, AuthorRepository>();
             services.AddScoped<IBookRepository, BookRepository>();
+            services.AddScoped<IAuthorBookRepository, AuthorBookRepository>();
 
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IAuthorService, AuthorService>();
             services.AddScoped<IBookService, BookService>();
 
             MapsterConfig.RegisterMappings();
+
+            services.Configure<AuthSettings>(configuration.GetSection(nameof(AuthSettings)));
 
             return services;
         }
