@@ -46,14 +46,25 @@
                 <select asp-for="AuthorIds" class="form-control" multiple style="height: 150px;">
                     @foreach (var author in ViewBag.Authors)
                     {
-                        <option value="@author.Id">@author.Firstname @author.Lastname</option>
+                        if (Model.AuthorIds.ToList().Contains(author.Id))
+                        {
+                            <option value="@author.Id" selected>
+                                @author.Firstname @author.Lastname
+                            </option>
+                        }
+                        else
+                        {
+                            <option value="@author.Id">
+                                @author.Firstname @author.Lastname
+                            </option>
+                        }
                     }
                 </select>
                 <span asp-validation-for="AuthorIds" class="text-danger"></span>
             </div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Save" class="btn btn-primary"/>
             </div>
         </form>
     </div>

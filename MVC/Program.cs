@@ -1,3 +1,4 @@
+using Application.Mapping;
 using MVC.Client;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +10,8 @@ builder.Services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 
 builder.Services.AddHttpClient();
 builder.Services.AddTransient<HttpClientService>();
+
+MapsterConfig.RegisterMappings();
 
 var app = builder.Build();
 
