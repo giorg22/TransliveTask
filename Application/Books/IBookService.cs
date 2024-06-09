@@ -19,5 +19,6 @@ namespace Application.Books
         Task<Response<DeleteBookResponse>> DeleteBook(string id);
         Task<Response<IEnumerable<BookModel>>> GetAllBooks();
         Task<Response<BookModel>> GetBookById(string id);
+        Task<Response<ChangeBookStatusResponse>> ChangeBookStatus(string id);
     }
 }

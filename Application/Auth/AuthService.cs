@@ -64,12 +64,12 @@ namespace Application.Auth
         private async Task<string> GenerateAccessToken(User user)
         {
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.Key));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("gc4laaKZovDdezpp6xRUBDPO7ow9j1Qw"));
 
             var token = new JwtSecurityToken(
-                       issuer: _config.Issuer,
-                       audience: _config.Audience,
-                       expires: DateTime.UtcNow.AddMinutes(30),
+                       issuer: "https://localhost:7112",
+                       audience: "https://localhost:7112",
+                       expires: DateTime.UtcNow.AddDays(1),
                        signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256));
 
             return new JwtSecurityTokenHandler().WriteToken(token);

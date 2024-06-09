@@ -4,14 +4,23 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Books</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
+<form asp-action="Index" method="get">
+    <div class="form-group">
+        <input type="text" class="form-control" name="searchString" value="@ViewData["booksFilter"]" />
+        <input type="submit" value="Search" class="btn btn-primary" />
+    </div>
+</form>
+
 <table class="table">
     <thead>
         <tr>
+            <th></th>
             <th>
                 @Html.DisplayNameFor(model => model.Title)
             </th>
@@ -19,13 +28,7 @@
                 @Html.DisplayNameFor(model => model.Description)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Rating)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PublishYear)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsTaken)
+                Author/s
             </th>
             <th></th>
             <th></th>
@@ -34,6 +37,9 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
+            <td style="padding: 0">
+                <img src="~/images/@item.ImagePath" style="height: 40px;" />
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Title)
             </td>
@@ -41,17 +47,9 @@
                 @Html.DisplayFor(modelItem => item.Description)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Rating)
+                @(string.Join(", ", item.Authors.Select(author => $"{author.Firstname} {author.Lastname}")))
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PublishYear)
-            </td>
-            <td>
-                @(item.IsTaken ? "Taken" : "Not Taken")
-            </td>
-            <td style="padding: 0">
-                <img src="~/images/@item.ImagePath" style="height: 40px;" />
-            </td>
+
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |

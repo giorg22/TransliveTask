@@ -5,12 +5,11 @@
 
 <ul class="navbar-nav">
     @{
-        var handler = new JwtSecurityTokenHandler();
         var username = _accessor.HttpContext.Request.Cookies["username"];
         if (username != null)
         {
             <li class="nav-item">
-                <h2>Hi @username!</h2>
+                <a>Hi @username!</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link text-dark" id="logout" asp-action="logout" asp-controller="auth">Logout</a>

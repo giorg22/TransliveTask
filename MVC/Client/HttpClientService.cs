@@ -16,9 +16,15 @@ namespace MVC.Client
     public class HttpClientService
     {
         private readonly HttpClient _httpClient;
-        public HttpClientService(HttpClient httpClient)
+        private readonly IHttpContextAccessor _accessor;
+        string jwt = null;
+        public HttpClientService(HttpClient httpClient, IHttpContextAccessor accessor)
         {
             _httpClient = httpClient;
+            _accessor = accessor;
+            jwt = _accessor.HttpContext.Request.Cookies["jwt"];
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
+
             httpClient.BaseAddress = new Uri("https://localhost:7112/v1/");
         }
 
@@ -126,7 +132,6 @@ namespace MVC.Client
             multipartContent.Add(new StringContent(book.Description), "Description");
             multipartContent.Add(new StringContent(book.Rating.ToString()), "Rating");
             multipartContent.Add(new StringContent(book.PublishYear.ToString()), "PublishYear");
-            multipartContent.Add(new StringContent(book.IsTaken.ToString()), "IsTaken");
 
             if (book.Image != null)
             {
@@ -153,6 +158,10 @@ namespace MVC.Client
             return await result.Content.ReadFromJsonAsync<Response<DeleteBookResponse>>();
         }
 
-        //https://localhost:7112/v1/Book/AddBook?Title=ewq&Description=asd&Rating=4&PublishYear=1232&IsTaken=true&AuthorIds=09cc9955-62c9-4d19-9993-b69da92e9896&AuthorIds=e36fabc8-4436-4d65-8954-fd65fde13c6c&AuthorIds=string
+        public async Task<Response<ChangeBookStatusResponse>> ChangeBookStatus(string id)
+        {
+            var result = await _httpClient.PostAsync($"book/changebookstatus/{id}", null);
+            return await result.Content.ReadFromJsonAsync<Response<ChangeBookStatusResponse>>();
+        }
     }
 }

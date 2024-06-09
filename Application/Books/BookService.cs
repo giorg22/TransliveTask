@@ -77,7 +77,11 @@ namespace Application.Books
 
         public async Task<Response<UpdateBookResponse>> UpdateBook(UpdateBookRequest request)
         {
-            var book = request.Adapt<Book>();
+            var book = await _bookRepository.GetById(request.Id);
+            book.Title = request.Title;
+            book.Description = request.Description;
+            book.Rating = request.Rating;
+            book.PublishYear = request.PublishYear;
 
             var authors = new List<AuthorBooks>();
 
@@ -95,20 +99,24 @@ namespace Application.Books
             await _authorBookRepository.RemoveRange(previousAuthors);
             await _authorBookRepository.AddRange(authors);
 
-            if (request.Image.FileName == null || request.Image.FileName.Length == 0)
+            if(request.Image != null)
             {
-                throw new FileLoadException("File not selected");
+                if (request.Image.FileName == null || request.Image.FileName.Length == 0)
+                {
+                    throw new FileLoadException("File not selected");
+                }
+
+                var path = Path.Combine(_configuration["ImagesPath"], request.Image.FileName);
+
+                using (FileStream stream = new FileStream(path, FileMode.Create))
+                {
+                    await request.Image.CopyToAsync(stream);
+                    stream.Close();
+                }
+
+                book.ImagePath = request.Image.FileName;
             }
 
-            var path = Path.Combine(_configuration["ImagesPath"], request.Image.FileName);
-
-            using (FileStream stream = new FileStream(path, FileMode.Create))
-            {
-                await request.Image.CopyToAsync(stream);
-                stream.Close();
-            }
-
-            book.ImagePath = request.Image.FileName;
             await _bookRepository.Update(book);
             return Ok<UpdateBookResponse>();
         }
@@ -142,6 +150,17 @@ namespace Application.Books
 
             var result = book.Adapt<BookModel>();
             return Ok(result);
+        }
+
+        public async Task<Response<ChangeBookStatusResponse>> ChangeBookStatus(string id)
+        {
+            var book = await _bookRepository.GetById(id);
+            if (book.IsTaken == false)
+                book.IsTaken = true;
+            else
+                book.IsTaken = false;
+            await _bookRepository.Update(book);
+            return Ok<ChangeBookStatusResponse>();
         }
     }
 }

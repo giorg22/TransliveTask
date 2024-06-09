@@ -31,6 +31,8 @@ namespace API.Controllers
             return Ok(result);
         }
 
+
+        [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpPost("AddBook")]
         public async Task<IActionResult> AddBook([FromForm] AddBookRequest request)
         {
@@ -38,6 +40,7 @@ namespace API.Controllers
             return Ok(result);
         }
 
+        [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpPut("UpdateBook")]
         public async Task<IActionResult> UpdateBook([FromForm] UpdateBookRequest request)
         {
@@ -45,10 +48,19 @@ namespace API.Controllers
             return Ok(result);
         }
 
+        [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpDelete("DeleteBook/{id}")]
         public async Task<IActionResult> DeleteBook(string id)
         {
             var result = await _bookService.DeleteBook(id);
+            return Ok(result);
+        }
+
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [HttpPost("ChangeBookStatus/{id}")]
+        public async Task<IActionResult> ChangeBookStatus(string id)
+        {
+            var result = await _bookService.ChangeBookStatus(id);
             return Ok(result);
         }
     }

@@ -8,7 +8,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 
 builder.Services.AddHttpClient();
-builder.Services.AddScoped<HttpClientService>();
+builder.Services.AddTransient<HttpClientService>();
 
 var app = builder.Build();
 

@@ -25,7 +25,7 @@ namespace API
             #region Swagger
             services.AddSwaggerGen(opt =>
             {
-                opt.SwaggerDoc("v1", new OpenApiInfo { Title = "AddMe Back-End", Version = "v1" });
+                opt.SwaggerDoc("v1", new OpenApiInfo { Title = "Translive Task", Version = "v1" });
                 opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     In = ParameterLocation.Header,
@@ -70,8 +70,8 @@ namespace API
                 options.SaveToken = true;
                 options.TokenValidationParameters = new TokenValidationParameters()
                 {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
                     ValidAudience = authSettings.GetValue<string>("Audience"),
                     ValidIssuer = authSettings.GetValue<string>("Issuer"),
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(authSettings.GetValue<string>("Key"))),

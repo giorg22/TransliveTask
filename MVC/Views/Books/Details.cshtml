@@ -39,9 +39,10 @@
         </dt>
         <dd class = "col-sm-10">
             @(Model.IsTaken ? "Taken" : "Not Taken")
+            <a asp-action="changestatus" asp-route-id="@Model.Id" class="btn btn-primary">@(Model.IsTaken ? "Return back" : "Take out")</a>
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Authors)
+            Author/s
         </dt>
         <dd class="col-sm-10">
             @(string.Join(", ", Model.Authors.Select(author => $"{author.Firstname} {author.Lastname}")))

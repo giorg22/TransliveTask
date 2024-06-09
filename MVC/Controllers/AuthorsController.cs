@@ -25,11 +25,19 @@ namespace MVC.Controllers
         }
 
         // GET: Author
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
             var response = await _httpClient.GetAuthors();
 
-            return View(response.Data);
+            ViewData["authorsFilter"] = searchString;
+
+            var authors = response.Data;
+
+            authors = !string.IsNullOrEmpty(searchString)
+                ? authors.Where(i => i.Firstname.ToLower().Contains(searchString) | i.Lastname.ToLower().Contains(searchString))
+                : authors;
+
+            return View(authors);
         }
 
         // GET: Author/Details/5
@@ -50,6 +58,8 @@ namespace MVC.Controllers
         }
 
         // GET: Author/Create
+
+        [Authorize]
         public IActionResult Create()
         {
             return View();
@@ -71,6 +81,8 @@ namespace MVC.Controllers
         }
 
         // GET: Author/Edit/5
+
+        [Authorize]
         public async Task<IActionResult> Edit(string id)
         {
             if (id == null)
@@ -108,6 +120,8 @@ namespace MVC.Controllers
         }
 
         // GET: Author/Delete/5
+
+        [Authorize]
         public async Task<IActionResult> Delete(string id)
         {
             if (id == null)

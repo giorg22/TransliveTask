@@ -28,11 +28,20 @@ namespace MVC.Controllers
 
         // GET: Books
         // GET: Author
-        public async Task<IActionResult> Index()
+
+        public async Task<IActionResult> Index(string SearchString)
         {
             var response = await _httpClient.GetBooks();
 
-            return View(response.Data);
+            ViewData["booksFilter"] = SearchString;
+
+            var books = response.Data;
+
+            books = !string.IsNullOrEmpty(SearchString)
+                ? books.Where(i => i.Title.ToLower().Contains(SearchString))
+                : books;
+
+            return View(books);
         }
 
         // GET: Author/Details/5
@@ -52,7 +61,7 @@ namespace MVC.Controllers
             return View(response.Data);
         }
 
-        // GET: Author/Create
+        [Authorize]
         public async Task<IActionResult> Create()
         {
             var response = await _httpClient.GetAuthors();
@@ -76,6 +85,8 @@ namespace MVC.Controllers
         }
 
         // GET: Author/Edit/5
+
+        [Authorize]
         public async Task<IActionResult> Edit(string id)
         {
             if (id == null)
@@ -119,6 +130,8 @@ namespace MVC.Controllers
         }
 
         // GET: Author/Delete/5
+
+        [Authorize]
         public async Task<IActionResult> Delete(string id)
         {
             if (id == null)
@@ -136,5 +149,19 @@ namespace MVC.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        [Authorize]
+        public async Task<IActionResult> ChangeStatus(string id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var book = await _httpClient.ChangeBookStatus(id);
+
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
     }
 }

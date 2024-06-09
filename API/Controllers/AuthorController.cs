@@ -30,6 +30,7 @@ namespace API.Controllers
             return Ok(result);
         }
 
+        [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpPost("AddAuthor")]
         public async Task<IActionResult> AddAuthor(AddAuthorRequest request)
         {
@@ -37,6 +38,7 @@ namespace API.Controllers
             return Ok(result);
         }
 
+        [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpPut("UpdateAuthor")]
         public async Task<IActionResult> UpdateAuthor(UpdateAuthorRequest request)
         {
@@ -44,6 +46,7 @@ namespace API.Controllers
             return Ok(result);
         }
 
+        [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpDelete("DeleteAuthor/{id}")]
         public async Task<IActionResult> DeleteAuthor(string id)
         {
