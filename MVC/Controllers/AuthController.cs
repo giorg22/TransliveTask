@@ -25,6 +25,7 @@ namespace BuyStuff.GE.MVC.Controllers
             var result = await _httpClient.Login(request);
             if (!result.Success)
             {
+                ViewData["error"] = result.Errors.FirstOrDefault();
                 return View();
             }
             Response.Cookies.Append("jwt", result.Data);
@@ -45,6 +46,7 @@ namespace BuyStuff.GE.MVC.Controllers
             var result = await _httpClient.Register(request);
             if (!result.Success)
             {
+                ViewData["error"] = result.Errors.FirstOrDefault();
                 return View();
             }
             Response.Cookies.Append("jwt", result.Data);

@@ -1,6 +1,7 @@
 ﻿using Application.Auth.Requests;
 using Application.Shared;
 using Domain.Entities;
+using FluentValidation;
 using Infrastructure.Configs;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
@@ -32,15 +33,23 @@ namespace Application.Auth
 
         public async Task<Response<string>> Login(LoginRequest request)
         {
+            LoginRequestValidator validator = new LoginRequestValidator();
+            var validationResult = await validator.ValidateAsync(request);
+
+            if (!validationResult.IsValid)
+            {
+                return Fail<string>(ErrorCode.ValidationFailed, validationResult);
+            }
+
             var user = await _userManager.FindByNameAsync(request.UserName);
             if (user == null)
             {
-                return Fail<string>(ErrorCode.InvalidUsernameOrPassword, "Invalid username or password");
+                return Fail<string>(ErrorCode.UserNotFound, "User not found");
             }
             var result = await _userManager.CheckPasswordAsync(user, request.Password);
             if (!result)
             {
-                return Fail<string>(ErrorCode.InvalidUsernameOrPassword, "Invalid username or password");
+                return Fail<string>(ErrorCode.InvalidUsernameOrPassword, "Invalid UserName or Password");
             }
             var token = await GenerateAccessToken(user);
             return Ok(token);
@@ -48,13 +57,21 @@ namespace Application.Auth
 
         public async Task<Response<string>> Register(RegisterRequest request)
         {
+            RegisterRequestValidator validator = new RegisterRequestValidator();
+            var validationResult = await validator.ValidateAsync(request);
+
+            if (!validationResult.IsValid)
+            {
+                return Fail<string>(ErrorCode.ValidationFailed, validationResult);
+            }
+
             var userExists = await _userManager.FindByNameAsync(request.UserName);
             if (userExists != null)
-                return Fail<string>(ErrorCode.AlreadyExists, "User already exists");
+                return Fail<string>(ErrorCode.UserAlreadyExists, "User already exists");
             var user = request.Adapt<User>();
             var result = await _userManager.CreateAsync(user, request.Password);
             if (!result.Succeeded)
-                return Fail<string>(result);
+                return Fail<string>(ErrorCode.ValidationFailed, result);
 
             var token = await GenerateAccessToken(user);
 
@@ -64,11 +81,11 @@ namespace Application.Auth
         private async Task<string> GenerateAccessToken(User user)
         {
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("gc4laaKZovDdezpp6xRUBDPO7ow9j1Qw"));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.Key));
 
             var token = new JwtSecurityToken(
-                       issuer: "https://localhost:7112",
-                       audience: "https://localhost:7112",
+                       issuer: _config.Issuer,
+                       audience: _config.Audience,
                        expires: DateTime.UtcNow.AddDays(1),
                        signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256));
 

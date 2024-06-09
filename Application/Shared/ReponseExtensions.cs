@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Identity;
 
 namespace Application.Shared
@@ -71,6 +72,32 @@ namespace Application.Shared
             {
                 Success = false,
                 Errors = result.Errors.Select(x => x.Description)
+            };
+        }
+        public static Response<T> Fail<T>(ErrorCode errorCode, IdentityResult result)
+        {
+            return new Response<T>()
+            {
+                Success = false,
+                ErrorCode = errorCode,
+                Errors = result.Errors.Select(x => x.Description)
+            };
+        }
+        public static Response<T> Fail<T>(ValidationResult result)
+        {
+            return new Response<T>()
+            {
+                Success = false,
+                Errors = result.Errors.Select(x => x.ErrorMessage)
+            };
+        }
+        public static Response<T> Fail<T>(ErrorCode errorCode, ValidationResult result)
+        {
+            return new Response<T>()
+            {
+                Success = false,
+                ErrorCode = errorCode,
+                Errors = result.Errors.Select(x => x.ErrorMessage)
             };
         }
     }

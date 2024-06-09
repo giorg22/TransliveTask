@@ -14,6 +14,7 @@ using MVC.Client;
 using Application.Books.Requests;
 using System.Runtime.CompilerServices;
 using Mapster;
+using Azure.Core;
 
 namespace MVC.Controllers
 {
@@ -53,7 +54,7 @@ namespace MVC.Controllers
             }
 
             var response = await _httpClient.GetBookById(id);
-            if (!response.Success && response.ErrorCode == ErrorCode.NotFound)
+            if (!response.Success && response.ErrorCode == ErrorCode.BookNotFound)
             {
                 return NotFound();
             }
@@ -79,6 +80,15 @@ namespace MVC.Controllers
             if (ModelState.IsValid)
             {
                 var result = await _httpClient.CreateBook(book);
+
+                if (!result.Success)
+                {
+                    ViewData["error"] = result.Errors.FirstOrDefault();
+                    var response = await _httpClient.GetAuthors();
+                    ViewBag.Authors = response.Data;
+                    return View();
+                }
+
                 return RedirectToAction(nameof(Index));
             }
             return View();
@@ -98,7 +108,7 @@ namespace MVC.Controllers
             ViewBag.Authors = result.Data;
 
             var response = await _httpClient.GetBookById(id);
-            if (!response.Success && response.ErrorCode == ErrorCode.NotFound)
+            if (!response.Success && response.ErrorCode == ErrorCode.BookNotFound)
             {
                 return NotFound();
             }
@@ -117,12 +127,17 @@ namespace MVC.Controllers
                 return NotFound();
             }
 
-            var result = await _httpClient.GetAuthors();
-            ViewBag.Authors = result.Data;
-
             if (ModelState.IsValid)
             {
-                await _httpClient.UpdateBook(book);
+                var result = await _httpClient.UpdateBook(book);
+
+                if (!result.Success)
+                {
+                    ViewData["error"] = result.Errors.FirstOrDefault();
+                    var response = await _httpClient.GetAuthors();
+                    ViewBag.Authors = response.Data;
+                    return View(book);
+                }
 
                 return RedirectToAction(nameof(Index));
             }

@@ -4,9 +4,8 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<h1>Create Author</h1>
 
-<h4>Author</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -30,6 +29,7 @@
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
+            <span class="text-danger">@ViewData["error"]</span>
         </form>
     </div>
 </div>

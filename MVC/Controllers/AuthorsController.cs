@@ -49,7 +49,7 @@ namespace MVC.Controllers
             }
 
             var response = await _httpClient.GetAuthorById(id);
-            if (!response.Success && response.ErrorCode == ErrorCode.NotFound)
+            if (!response.Success && response.ErrorCode == ErrorCode.AuthorNotFound)
             {
                 return NotFound();
             }
@@ -75,6 +75,13 @@ namespace MVC.Controllers
             if (ModelState.IsValid)
             {
                 var result = await _httpClient.CreateAuthhor(author);
+
+                if (!result.Success)
+                {
+                    ViewData["error"] = result.Errors.FirstOrDefault();
+                    return View();
+                }
+
                 return RedirectToAction(nameof(Index));
             }
             return View();
@@ -91,7 +98,7 @@ namespace MVC.Controllers
             }
 
             var response = await _httpClient.GetAuthorById(id);
-            if (!response.Success && response.ErrorCode == ErrorCode.NotFound)
+            if (!response.Success && response.ErrorCode == ErrorCode.AuthorNotFound)
             {
                 return NotFound();
             }
@@ -112,7 +119,13 @@ namespace MVC.Controllers
 
             if (ModelState.IsValid)
             {
-                await _httpClient.UpdateAuthor(author);
+                var result = await _httpClient.UpdateAuthor(author);
+
+                if (!result.Success)
+                {
+                    ViewData["error"] = result.Errors.FirstOrDefault();
+                    return View();
+                }
 
                 return RedirectToAction(nameof(Index));
             }

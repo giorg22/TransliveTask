@@ -15,6 +15,8 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
+using Application.Auth.Requests;
+using FluentValidation;
 
 namespace API
 {
@@ -111,6 +113,8 @@ namespace API
             MapsterConfig.RegisterMappings();
 
             services.Configure<AuthSettings>(configuration.GetSection(nameof(AuthSettings)));
+
+            services.AddValidatorsFromAssemblyContaining<LoginRequestValidator>();
 
             return services;
         }
