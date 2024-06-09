@@ -12,7 +12,7 @@ namespace Domain.Entities
         public string Title { get; set; }
         public string Description { get; set; }
         public string ImagePath { get; set; }
-        public int Rating { get; set; }
+        public double Rating { get; set; }
         public int PublishYear { get; set; }
         public bool IsTaken { get; set; }
         public IEnumerable<AuthorBooks> AuthorBooks { get; set; }
