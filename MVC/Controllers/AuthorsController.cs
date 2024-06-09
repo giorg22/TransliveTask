@@ -78,7 +78,7 @@ namespace MVC.Controllers
 
                 if (!result.Success)
                 {
-                    ViewData["error"] = result.Errors.FirstOrDefault();
+                    ViewBag.Errors = result.Errors;
                     return View();
                 }
 
@@ -123,7 +123,7 @@ namespace MVC.Controllers
 
                 if (!result.Success)
                 {
-                    ViewData["error"] = result.Errors.FirstOrDefault();
+                    ViewBag.Errors = result.Errors;
                     return View();
                 }
 

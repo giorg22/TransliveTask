@@ -24,7 +24,15 @@
             <div class="form-group">
                 <input type="submit" value="Log In" class="btn btn-primary" />
             </div>
-            <span class="text-danger">@ViewData["error"]</span>
+            @if (ViewBag.Errors != null)
+            {
+                foreach (var error in ViewBag.Errors)
+                {
+                    <span class="text-danger">@error</span>
+
+                    <br />
+                }
+            }
         </form>
     </div>
 </div>

@@ -83,7 +83,7 @@ namespace MVC.Controllers
 
                 if (!result.Success)
                 {
-                    ViewData["error"] = result.Errors.FirstOrDefault();
+                    ViewBag.Errors = result.Errors;
                     var response = await _httpClient.GetAuthors();
                     ViewBag.Authors = response.Data;
                     return View();
@@ -133,7 +133,7 @@ namespace MVC.Controllers
 
                 if (!result.Success)
                 {
-                    ViewData["error"] = result.Errors.FirstOrDefault();
+                    ViewBag.Errors = result.Errors;
                     var response = await _httpClient.GetAuthors();
                     ViewBag.Authors = response.Data;
                     return View(book);
